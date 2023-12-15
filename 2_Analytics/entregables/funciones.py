@@ -7,7 +7,7 @@ def posicionar_barco(barco,tablero):
 barcos = []
 
 # Función para generar un nuevo barco de longitud 4 aleatoriamente
-def nuevo_barco(tamaño):
+def nuevo_barco(tamaño,tablero):
     posicion = (np.random.randint(0, 10), np.random.randint(0, 10))
     orientacion = np.random.randint(0, 4)  # 0->N, 1->S, 2->E, 3->O
     barco_nuevo = []
@@ -26,25 +26,40 @@ def nuevo_barco(tamaño):
         for i in range(tamaño):
             barco_nuevo.append(((posicion[0]), posicion[1] - i))
     else:
-        return nuevo_barco(tamaño)  # Si no hay espacio, generar un nuevo barco
+        return nuevo_barco(tamaño,tablero)  # Si no hay espacio, generar un nuevo barco
 
     # Verificar que el nuevo barco no se superponga con los existentes
     for posi_barco_nuevo in barco_nuevo:
         for barco in barcos:
             for posi_barco in barco:
                 if posi_barco == posi_barco_nuevo:
-                    return nuevo_barco(tamaño)  # Si se superpone, generar un nuevo barco
+                    return nuevo_barco(tamaño,tablero)  # Si se superpone, generar un nuevo barco
 
     # Imprimir el nuevo barco y posicionarlo en el tablero
-    posicionar_barco(barco_nuevo)
+    posicionar_barco(barco_nuevo,tablero)
     barcos.append(barco_nuevo)
+    return barco_nuevo
+
 
 
 # Función para realizar un disparo en el tablero
-def disparo(disparo,barcos,tablero):
-    for barco in barcos:
+def disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves):
+    for barco in barcos_enemigos:
         for posicion in barco:
-            if posicion == disparo:
-                tablero[disparo[0], disparo[1]] = "X"
-            elif posicion != disparo and tablero[disparo[0], disparo[1]] == " ":
-                tablero[disparo[0], disparo[1]] = "-"
+            if posicion == coordenadas:
+                tablero_del_enemigo_que_ves[coordenadas[0], coordenadas[1]] = "X"
+                continue
+            elif posicion != coordenadas and tablero_del_enemigo_que_ves[coordenadas[0], coordenadas[1]] == " ":
+                tablero_del_enemigo_que_ves[coordenadas[0], coordenadas[1]] = "-"
+                continue
+            #else:
+              #  dispara_enemigo(barcos_enemigos,tablero_del_enemigo_que_ves)
+
+def disparo_yo (barcos_enemigos,tablero_del_enemigo_que_ves):
+    coordenadas = (int(input("Introduce la coordenada x a la que quieres disparar")),\
+                   int(input("Introduce la coordenada y a la que quieres disparar")))
+    disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves)
+
+def dispara_enemigo (barcos_enemigos,tablero_del_enemigo_que_ves):
+    coordenadas = (np.random.randint(0, 10), np.random.randint(0, 10))  
+    disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves)
