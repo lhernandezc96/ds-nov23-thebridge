@@ -43,23 +43,22 @@ def nuevo_barco(tamaño,tablero):
 
 
 # Función para realizar un disparo en el tablero
-def disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves):
+def disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves,tablero):
     for barco in barcos_enemigos:
         for posicion in barco:
             if posicion == coordenadas:
                 tablero_del_enemigo_que_ves[coordenadas[0], coordenadas[1]] = "X"
-                continue
+                tablero[coordenadas[0], coordenadas[1]] = "X"
+                break
             elif posicion != coordenadas and tablero_del_enemigo_que_ves[coordenadas[0], coordenadas[1]] == " ":
                 tablero_del_enemigo_que_ves[coordenadas[0], coordenadas[1]] = "-"
-                continue
-            #else:
-              #  dispara_enemigo(barcos_enemigos,tablero_del_enemigo_que_ves)
+                tablero[coordenadas[0], coordenadas[1]] = "-"
+                break
 
-def disparo_yo (barcos_enemigos,tablero_del_enemigo_que_ves):
-    coordenadas = (int(input("Introduce la coordenada x a la que quieres disparar")),\
-                   int(input("Introduce la coordenada y a la que quieres disparar")))
-    disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves)
+def seguir_juego (tablero):
+    return np.any(tablero == "O")
 
-def dispara_enemigo (barcos_enemigos,tablero_del_enemigo_que_ves):
-    coordenadas = (np.random.randint(0, 10), np.random.randint(0, 10))  
-    disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves)
+
+
+        
+    
