@@ -23,9 +23,10 @@ def jugar():
     player.rellenar_tablero()
     pc = tablero.Tablero("pc")
     pc.rellenar_tablero()
-    print ("""Los barcos se posicionan aleatoriamente en el tablero, al igual que los de la maquina.
+    print ("""Tus barcos se posicionan aleatoriamente en el tablero, al igual que los de la maquina.
 Así ha quedado tu tablero: \n""", player.tablero)
     print('''El juego es sencillo, consiste en ir introduciendo coordenadas hasta que hundas todos los barcos del rival.
+Cuando disparas se marcara con un - si el disparo ha fallado y con una X cuando el disparo de en el blanco.
 El tablero es de tamañao 10x10, por lo que las coordenadas que debemos introducir van de 0 a 9.
 Por ejemplo, si queremos disparar a la segunda fila y la tercera columna deberemos introducir primero un 1 y despues un 2
           
@@ -39,7 +40,10 @@ Lo primero de todo tenemos que escoger la dificultad:
     Nivel 3: Cada turno el enemigo dispara hasta fallar 3 veces''')
     def pedir_dif ():
         try:
-            dificultad =  int(input("¿Que dificultad eliges?: "))
+            dificultad =  input("¿Que dificultad eliges?: ")
+            if dificultad == "end":
+                return "end"
+            dificultad = int(dificultad)
             while 0 > dificultad or dificultad > 3:
                 print ("El valor introducida debe estar comprendido entre 1 y 3")
                 return pedir_dif()
@@ -48,6 +52,8 @@ Lo primero de todo tenemos que escoger la dificultad:
             print ("Debe introducir un valor numerico comprendido entre 1 y 3")
             return pedir_dif()
     dificultad = pedir_dif()
+    if dificultad == "end":
+        return 
 
 
     print('''Bien,una vez elegida la dificultad empecemos''')
