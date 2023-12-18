@@ -55,8 +55,24 @@ def disparo(coordenadas,barcos_enemigos,tablero_del_enemigo_que_ves,tablero):
                 tablero[coordenadas[0], coordenadas[1]] = "-"
                 break
 
+#Función para detectar si se han hundido todos los barcos
 def seguir_juego (tablero):
     return np.any(tablero == "O")
+
+# Función para pedir la dificultad al jugador
+def pedir_dif ():
+        try:
+            dificultad =  input("¿Que dificultad eliges?: ")
+            if dificultad == "end":
+                return "end"
+            dificultad = int(dificultad)
+            while 0 > dificultad or dificultad > 3:
+                print ("El valor introducida debe estar comprendido entre 1 y 3")
+                return pedir_dif()
+            return dificultad
+        except:
+            print ("Debe introducir un valor numerico comprendido entre 1 y 3")
+            return pedir_dif()
 
 
 
