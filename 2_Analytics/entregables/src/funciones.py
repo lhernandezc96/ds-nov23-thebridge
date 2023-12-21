@@ -1,4 +1,5 @@
 import numpy as np
+
 # Función para posicionar un barco en el tablero
 def posicionar_barco(barco,tablero):
     for posicion in barco:
@@ -73,6 +74,8 @@ def pedir_dif ():
         except:
             print ("Debe introducir un valor numerico comprendido entre 1 y 3")
             return pedir_dif()
+
+
 
 
 
