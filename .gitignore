@@ -1,6 +1,7 @@
 # Especificamos lo que no queremos que se suba al repositorio
 #*.xlsx
 PROF_*
+api_*
 *.DS_Store
 *.idea
 credentials*
