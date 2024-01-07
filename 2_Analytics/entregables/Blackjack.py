@@ -1,5 +1,6 @@
 import random as rd
 import time
+import pandas as pd
 
 def sacar_carta():
     # La función devuelve una tupla con el valor y el palo de la carta.
@@ -38,11 +39,21 @@ def obtener_nombre_carta(valor):
     else:
         return str(valor)
 
+columnas = ['Valor Primera Carta', 'Cartas Restantes', 'Suma Mano', 'Fichas Apostadas', 'Ganancia/Perdida', 'Fichas Restantes']
+index = pd.MultiIndex(levels=[[], [], []], codes=[[], [], []], names=['Partida', 'Ronda', 'Jugador'])
+data = pd.DataFrame(columns=columnas, index=index)
+partida = 1
+
 def jugar():
     # Inicialización de jugadores
+    global data
+    global partida
     jugador1 = Jugador()
     crupier = Jugador()
+    ronda = 0
     while jugador1.fichas > 0:
+        ronda += 1
+        fichas_iniciales = jugador1.fichas  # Guardar el número de fichas al comienzo de la ronda
         otra = ""
         i = 1
         imprimir_poco_a_poco("Tienes " + str(jugador1.fichas) + " fichas")
@@ -54,7 +65,7 @@ def jugar():
                 break
             try:
                 apuesta = int(apuesta)
-                if apuesta < jugador1.fichas:
+                if apuesta <= jugador1.fichas:
                     break
                 imprimir_poco_a_poco("""El valor introducido debe ser numerico y menor o igual a las fichas que le quedan.
 También puede introducir all in si quieres apostar todas tus fichas o end si quieres que acabe el juego""")
@@ -71,11 +82,13 @@ También puede introducir all in si quieres apostar todas tus fichas o end si qu
             apuesta = jugador1.fichas
         apuesta = int(apuesta)
         jugador1.fichas -= apuesta
+        as_crupier = False
+        as_jugador1 = False
 
         while i > 0:
             # Turno del jugador
             if otra != "N":
-                as_jugador1 = False
+                
                 carta_jugador = sacar_carta()
                 valor_carta, palo_carta = carta_jugador
 
@@ -97,16 +110,14 @@ También puede introducir all in si quieres apostar todas tus fichas o end si qu
                     for i in range(len(jugador1.mano)):
                         if jugador1.mano[i] == 11:
                             jugador1.mano[i] = 1
+                if sum(jugador1.mano) > 21:
+                    otra = "N"
 
                 imprimir_poco_a_poco("Tu mano: "+ str(sum(jugador1.mano)))
                 print()
 
-                # Fin del juego si la mano del jugador supera 21
-                if sum(jugador1.mano) > 21:
-                    break
-
                 # Pregunta al jugador si desea otra carta (excepto en el primer turno)
-                if i > 1:
+                if i > 1 and sum(jugador1.mano) < 21:
                     while True:
                         imprimir_poco_a_poco("¿Quieres que se te reparta otra carta? S/N ")
                         otra = input().upper()
@@ -123,7 +134,7 @@ También puede introducir all in si quieres apostar todas tus fichas o end si qu
                     continue
 
             # Turno del crupier
-            as_crupier = False
+            
             carta_crupier = sacar_carta()
             valor_carta_crupier, palo_carta_crupier = carta_crupier
 
@@ -177,8 +188,23 @@ También puede introducir all in si quieres apostar todas tus fichas o end si qu
         else:
             imprimir_poco_a_poco("Has perdido, tu mano es inferior a la del crupier")
         print()
+        
+        # Registrar datos de la ronda en el DataFrame
+        data.loc[(partida, ronda, 'Jugador'), :] = [
+            jugador1.mano[0], str(jugador1.mano[1:]), sum(jugador1.mano), apuesta, '', jugador1.fichas
+        ] if len(jugador1.mano) >= 2 else [jugador1.mano[0], (), jugador1.mano[0], apuesta, '', jugador1.fichas]
+
+        data.loc[(partida, ronda, 'Crupier'), :] = [
+            crupier.mano[0], str(crupier.mano[1:]), sum(crupier.mano), pd.NA, '', pd.NA
+        ] if len(crupier.mano) >= 2 else [crupier.mano[0], (), sum(crupier.mano), pd.NA, '', pd.NA]
+        # Calcular ganancia/resta y actualizar la columna correspondiente
+        ganancia_perdida = jugador1.fichas - fichas_iniciales
+        data.loc[(partida, ronda, 'Jugador'), 'Ganancia/Perdida'] = f"+{ganancia_perdida}" if ganancia_perdida > 0 else f"{ganancia_perdida}"
+        
         jugador1.reset_mano()
         crupier.reset_mano()
+
+
 
     imprimir_poco_a_poco("Te has quedado sin fichas")
     print() 
@@ -191,9 +217,12 @@ También puede introducir all in si quieres apostar todas tus fichas o end si qu
         elif otrapartida == "N":
             break
         elif otrapartida == "S":
+            partida += 1
             return jugar()
         imprimir_poco_a_poco("Por favor, escribe S si quieres otra partida o N si no la quieres")
         print()
 
 # Llamada a la función para iniciar el juego.
 jugar()
+print(data)
+
